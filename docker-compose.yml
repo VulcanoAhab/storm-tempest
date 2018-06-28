@@ -1,0 +1,55 @@
+
+version: '3.1'
+
+services:
+  zookeeper:
+    image: zookeeper:3.5
+    container_name: zookeeper
+    restart: always
+
+  nimbus:
+    image: storm
+    container_name: nimbus
+    command: storm nimbus
+    depends_on:
+      - zookeeper
+    links:
+      - zookeeper
+    restart: always
+    ports:
+      - 6627:6627
+    volumes:
+      - ./storm/conf:/conf
+
+  supervisor:
+    #image: storm
+    build: ./storm/hotweather
+    container_name: supervisor
+    command: storm supervisor
+    depends_on:
+      - nimbus
+      - zookeeper
+    links:
+      - nimbus
+      - zookeeper
+    restart: always
+    volumes:
+      - ./storm/conf:/conf
+    ports:
+      - 4444:4444 #selenium
+
+  storm-ui:
+    image: storm
+    container_name: storm-ui
+    command: storm ui
+    depends_on:
+        - nimbus
+        - zookeeper
+        - supervisor
+    links:
+        - nimbus
+        - zookeeper
+        - supervisor
+    restart: always
+    ports:
+        - "8080:8080"
