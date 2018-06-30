@@ -41,7 +41,7 @@ RUN apk add --no-cache \
     python \
     su-exec
 
-#Log
+#Log :: streamparse default
 RUN mkdir -p /var/log/storm/streamparse/
 RUN chown -R storm:storm /var/log/storm/
 
