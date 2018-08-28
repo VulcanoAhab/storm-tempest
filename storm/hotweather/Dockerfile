@@ -41,10 +41,6 @@ RUN apk add --no-cache \
     python \
     su-exec
 
-#Log :: streamparse default
-RUN mkdir -p /var/log/storm/streamparse/
-RUN chown -R storm:storm /var/log/storm/
-
 #storm
 ENV STORM_USER=storm \
     STORM_CONF_DIR=/conf \
@@ -85,6 +81,10 @@ RUN . /data/virtualenvs/tempest/bin/activate && \
 pip install streamparse && \
 pip install https://github.com/VulcanoAhab/pyBrows/archive/master.zip
 
+
+#log streamparse default
+RUN mkdir -p /var/log/storm/streamparse/
+RUN chown storm:storm /var/log/storm/streamparse/
 
 COPY storm-supervisor-entrypoint.sh /
 RUN chown storm:storm /storm-supervisor-entrypoint.sh
