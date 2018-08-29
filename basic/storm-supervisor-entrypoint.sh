@@ -13,10 +13,13 @@ CONFIG="$STORM_CONF_DIR/storm.yaml"
 if [ ! -f "$CONFIG" ]; then touch $STORM_CONF_DIR/storm.yaml; fi
 
 cat  >> "$CONFIG" << EOF
-storm.zookeeper.servers: [$ZOOKEEPER]
-nimbus.seeds: [$NIMBUS]
+storm.zookeeper.servers:
+  - $ZOOKEEPER
+nimbus.host: $NIMBUS
 storm.log.dir: "$STORM_LOG_DIR"
 storm.local.dir: "$STORM_DATA_DIR"
 EOF
+
+cat $STORM_CONF_DIR/storm.yaml
 
 exec "$@"

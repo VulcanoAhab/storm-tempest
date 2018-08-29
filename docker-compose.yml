@@ -19,11 +19,11 @@ services:
     ports:
       - 6627:6627
     volumes:
-      - ./storm/conf:/conf
+      - ./hotweather/conf:/conf
 
   supervisor:
     #image: storm
-    build: ./storm/hotweather
+    build: ./hotweather/
     container_name: supervisor
     command: storm supervisor
     depends_on:
@@ -34,7 +34,7 @@ services:
       - zookeeper
     restart: always
     volumes:
-      - ./storm/conf:/conf
+      - ./hotweather/conf:/conf
     ports:
       - 4444:4444 #selenium
 
