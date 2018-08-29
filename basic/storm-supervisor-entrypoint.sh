@@ -12,14 +12,30 @@ fi
 CONFIG="$STORM_CONF_DIR/storm.yaml"
 if [ ! -f "$CONFIG" ]; then touch $STORM_CONF_DIR/storm.yaml; fi
 
+if [ ! -z $ZOOKEEPER ];  then
+  echo "storm.zookeeper.servers:[\"$ZOOKEEPER\"]" >> $CONFIG
+else #kubernetes | [zookeeper] service
+  if [ ! -z $ZOOKEEPER_SERVICE_HOST ]; then
+    echo "storm.zookeeper.servers:[\"$ZOOKEEPER_SERVICE_HOST\"]" >> $CONFIG
+  fi
+fi
+
+if [ ! -z $NIMBUS ];  then
+  echo "nimbus.seeds:[\"$NIMBUS\"]" >> $CONFIG
+else #kubernetes | [nimbus] service
+  if [ ! -z $NIMBUS_SERVICE_HOST ]; then
+    echo "nimbus.seeds:[\"$NIMBUS_SERVICE_HOST\"]" >> $CONFIG
+  fi
+fi
+
 cat  >> "$CONFIG" << EOF
-storm.zookeeper.servers:
-  - $ZOOKEEPER
-nimbus.host: $NIMBUS
 storm.log.dir: "$STORM_LOG_DIR"
 storm.local.dir: "$STORM_DATA_DIR"
 EOF
 
+echo "CONFIG SETTING ##################################"
 cat $STORM_CONF_DIR/storm.yaml
+echo "#################################################"
+echo
 
 exec "$@"

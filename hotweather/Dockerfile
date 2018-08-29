@@ -37,12 +37,6 @@ RUN pip install virtualenv && \
     cd /data/virtualenvs && \
     virtualenv tempest
 
-# Install storm required packages
-RUN apk add --no-cache \
-    bash \
-    python \
-    su-exec
-
 #Install requirements
 COPY tempest.txt /tmp/
 RUN source /data/virtualenvs/tempest/bin/activate && \
@@ -62,5 +56,8 @@ RUN chown storm:storm $STORM_CONF_DIR/storm.yaml
 COPY storm-supervisor-entrypoint.sh /
 RUN chown storm:storm /storm-supervisor-entrypoint.sh
 RUN chmod u+x /storm-supervisor-entrypoint.sh
+
+EXPOSE 3772 6627 6700 6701 6702 6703 8080
+
 
 ENTRYPOINT ["/storm-supervisor-entrypoint.sh"]
