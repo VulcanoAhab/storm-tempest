@@ -1,6 +1,7 @@
 FROM openjdk:8-jre-alpine
 
 #Install tempest required packages
+
 ##python3
 RUN apk add --no-cache python3 && \
     python3 -m ensurepip && \
@@ -9,9 +10,11 @@ RUN apk add --no-cache python3 && \
     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
     if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
     rm -r /root/.cache
+
 ##chrome drive
 RUN apk update && \
 	apk add curl unzip libexif udev chromium chromium-chromedriver
+
 ##streamparse
 RUN apk add --no-cache \
   python3-dev \
@@ -77,14 +80,21 @@ WORKDIR $DISTRO_NAME
 ENV PATH $PATH:/$DISTRO_NAME/bin
 
 #Install requirements
-RUN . /data/virtualenvs/tempest/bin/activate && \
-pip install streamparse && \
-pip install https://github.com/VulcanoAhab/pyBrows/archive/master.zip
+COPY tempest.txt /tmp/
+RUN source /data/virtualenvs/tempest/bin/activate && \
+pip install -r /tmp/tempest.txt
+RUN rm /tmp/tempest.txt
 
 
 #log streamparse default
 RUN mkdir -p /var/log/storm/streamparse/
 RUN chown storm:storm /var/log/storm/streamparse/
+
+#storm config
+RUN mkdir -p $STORM_CONF_DIR
+COPY ./conf/storm.yaml $STORM_CONF_DIR
+RUN chown storm:storm $STORM_CONF_DIR/storm.yaml
+
 
 COPY storm-supervisor-entrypoint.sh /
 RUN chown storm:storm /storm-supervisor-entrypoint.sh
