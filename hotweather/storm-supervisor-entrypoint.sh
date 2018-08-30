@@ -8,30 +8,36 @@ if [ "$1" = 'storm' -a "$(id -u)" = '0' ]; then
     exec su-exec "$STORM_USER" "$0" "$@"
 fi
 
-# Generate the config only if it doesn't exist
-CONFIG="$STORM_CONF_DIR/storm.yaml"
-if [ ! -f "$CONFIG" ]; then touch $STORM_CONF_DIR/storm.yaml; fi
-
 if [ ! -z $ZOOKEEPER ];  then
-  echo "storm.zookeeper.servers:[\"$ZOOKEEPER\"]" >> $CONFIG
+  export ZOO=$ZOOKEEPER
 else #kubernetes | [zookeeper] service
   if [ ! -z $ZOOKEEPER_SERVICE_HOST ]; then
-    echo "storm.zookeeper.servers:[\"$ZOOKEEPER_SERVICE_HOST\"]" >> $CONFIG
+    export ZOO=$ZOOKEEPER_SERVICE_HOST
+  else
+    export ZOO=""
   fi
 fi
 
 if [ ! -z $NIMBUS ];  then
-  echo "nimbus.seeds:[\"$NIMBUS\"]" >> $CONFIG
+  export NIM=$NIMBUS
 else #kubernetes | [nimbus] service
   if [ ! -z $NIMBUS_SERVICE_HOST ]; then
-    echo "nimbus.seeds:[\"$NIMBUS_SERVICE_HOST\"]" >> $CONFIG
+    export NIM=$NIMBUS_SERVICE_HOST
+  else
+    export NIM=""
   fi
 fi
 
-cat  >> "$CONFIG" << EOF
+# Generate the config  if it doesn't exist and update
+CONFIG="$STORM_CONF_DIR/storm.yaml"
+if [ ! -f "$CONFIG" ]; then
+  cat >> "$CONFIG" <<EOF
+storm.zookeeper.servers: [ $ZOO ]
+nimbus.seeds: [ $NIM ]
 storm.log.dir: "$STORM_LOG_DIR"
 storm.local.dir: "$STORM_DATA_DIR"
 EOF
+fi
 
 echo "CONFIG SETTING ##################################"
 cat $STORM_CONF_DIR/storm.yaml
