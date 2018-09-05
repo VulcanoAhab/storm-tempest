@@ -12,12 +12,14 @@ kafka-python==1.4.3
 python-dateutil==2.7.3
 pytz==2018.5
 PyYAML==3.13
-regex==2018.7.11
+numpy==1.15.1
 requests==2.19.1
 s3transfer==0.1.13
 six==1.11.0
 tzlocal==1.5.1
 urllib3==1.23
+scipy==1.1.0
+scikit-learn==0.18.1
 https://github.com/VulcanoAhab/custodi/archive/master.zip
 https://github.com/VulcanoAhab/pyMerli/archive/master.zip
 https://github.com/VulcanoAhab/pyBrows/archive/master.zip

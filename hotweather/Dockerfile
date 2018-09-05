@@ -1,4 +1,4 @@
-FROM storm:0.9.3
+FROM storm:1.2.2
 
 
 ##python3
@@ -6,8 +6,8 @@ RUN apk add --no-cache python3 && \
     python3 -m ensurepip && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install --upgrade pip setuptools && \
-    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
-    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+    ln -sf pip3 /usr/bin/pip && \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
     rm -r /root/.cache
 
 ##chrome drive
@@ -16,7 +16,6 @@ RUN apk update && \
 
 ##streamparse
 RUN apk add --no-cache \
-  python3-dev \
   gcc \
   libffi \
   libffi-dev \
@@ -31,6 +30,10 @@ RUN echo \
   && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
 RUN apk add --no-cache libxml2-dev libxslt-dev
 
+##machine learning // scipy - numpy - scikit
+RUN apk --no-cache --update-cache add python3-dev gfortran build-base wget freetype-dev libpng-dev openblas-dev \
+&& ln -s /usr/include/locale.h /usr/include/xlocale.h
+
 #Create tempest virtualenv
 RUN pip install virtualenv && \
     mkdir -p /data/virtualenvs && \
@@ -40,7 +43,7 @@ RUN pip install virtualenv && \
 #Install requirements
 COPY tempest.txt /tmp/
 RUN source /data/virtualenvs/tempest/bin/activate && \
-pip install -r /tmp/tempest.txt
+pip install --no-cache-dir -r /tmp/tempest.txt
 RUN rm /tmp/tempest.txt
 
 #log streamparse default

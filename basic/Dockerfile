@@ -1,4 +1,4 @@
-FROM storm:1.1
+FROM storm:1.2.2
 
 COPY storm-supervisor-entrypoint.sh /
 RUN chown storm:storm /storm-supervisor-entrypoint.sh
