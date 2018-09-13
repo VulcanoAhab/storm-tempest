@@ -36,6 +36,9 @@ storm.zookeeper.servers: [ $ZOO ]
 nimbus.seeds: [ $NIM ]
 storm.log.dir: "$STORM_LOG_DIR"
 storm.local.dir: "$STORM_DATA_DIR"
+supervisor.worker.timeout.secs: 600
+nimbus.task.timeout.secs: 600
+nimbus.supervisor.timeout.secs: 600
 EOF
 fi
 
